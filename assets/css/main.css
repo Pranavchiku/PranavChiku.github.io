@@ -350,7 +350,7 @@ sup {
 hr {
 	border: 0;
 	border-bottom: solid 2px #fff;
-	margin: 3em 0;
+	margin: 1em 0;
 }
 
 hr.major {
@@ -3135,7 +3135,7 @@ button:disabled,
 }
 
 .wrapper.style3 hr {
-	border-color: rgba(0, 0, 0, 0.125);
+	border-top: 2.5px dashed grey;
 }
 
 .wrapper.style3 blockquote {
@@ -3307,7 +3307,7 @@ button:disabled,
 }
 
 .wrapper.style5 hr {
-	border-color: #dfdfdf;
+	border-top: 2.5px dashed grey;
 }
 
 .wrapper.style5 blockquote {
