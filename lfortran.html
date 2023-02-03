@@ -48,6 +48,24 @@
                 <div class="inner">
 
                     <section>
+                        <h4>Tokenizing complex*8</h4>
+                        <h6>Date: Feb 2, 2023.</h6>
+                        <p>
+                            While trying to compile LAPACK source files with LFortran compiler, I can accross below
+                            given code which halts compiler from execution.
+                        </p>
+                        <script src="https://gist.github.com/Pranavchiku/ead684492399120905af602d34c004b8.js"></script>
+                        <p>
+                            Digging deep into it, I found that it there are no provision to tokenize keyword "complex*Y"
+                            where Y belongs to {4,8,16} and because of that it stuck into infinite loop and resulted in
+                            a halt.
+                            Then I checked if "real*8" is tokenized with LFortran or not and greatly it did, I just
+                            copied over implementation from it for complex and bam! It worked.
+                            That's all about a part of my work at LFortran. <a
+                                href="https://github.com/lfortran/lfortran/issues/1235">Lfortran/issue/1235</a> and fix
+                            at <a href="https://github.com/lfortran/lfortran/pull/1244">Lfortran/pull/1244</a>.
+                        </p>
+                        <hr />
                         <h4>Fixing ASR:Verify Fail</h4>
                         <h6>Date: Jan 18, 2023.</h6>
                         <p>
