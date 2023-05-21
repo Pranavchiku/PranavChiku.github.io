@@ -1,0 +1,162 @@
+<!DOCTYPE HTML>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+    <title>Week1 - COMMON blocks</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+        <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+</head>
+
+<body class="is-preload">
+
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+
+        <!-- Header -->
+        <header id="header">
+            <h1><a href="../index.html">Home</a></h1>
+            <nav id="nav">
+                <ul>
+                    <li class="special">
+                        <a href="#menu" class="menuToggle"><span>Menu</span></a>
+                        <div id="menu">
+                            <ul>
+                                <li><a href="../index.html">Home</a></li>
+                                <li><a href="../generic.html">Generic</a></li>
+                                <li><a href="../blog.html">Blog</a></li>
+                                <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Main -->
+        <article id="main">
+            <header>
+                <h2>Week1 - Implementing COMMON block!</h2>
+                <!-- <p>Recession time ;-;</p> -->
+            </header>
+            <section class="wrapper style5">
+                <div class="inner">
+
+                    <h3>Implement COMMON block</h3>
+                    <h6>Date: May 21, 2023.</h6>
+                    <p>
+                        Hii, welcome to the very first blog of my GSoC'23 journey. I will be working to get LFortran compile 
+                        the fortran codebase of <a href="https://github.com/scipy/scipy">SciPy</a>. To begin with this, I figured out
+                        the major bugs in the codebase that is preventing LFortran to compile it and one of them was the use of COMMON block.
+                    </p>
+                    <p>
+                        You might be wondering why to use COMMON block when we have modules and classes in fortran. Well, the answer is
+                        simple, COMMON block is a way to share data between different subroutines and functions. It is a global variable
+                        that can be accessed by any subroutine or function. It is a very old way of sharing data and is not recommended
+                        to use it in modern fortran code. But, SciPy is a very old codebase and it is not possible to change the whole
+                        codebase to use modules and classes. So, we have to use COMMON block to share data between different subroutines
+                        and functions.
+                    </p>
+                    <p>
+                        Let's start with an example to understand how COMMON block works. Suppose we have two subroutines, one to read
+                        the data and other to print the data. We want to share the data between these two subroutines. So, we will use
+                        COMMON block to share the data. We will declare a COMMON block in both the subroutines and use it to share the
+                        data. You can refer to the code snippet below to understand how to it is done, where r() represents read subroutine
+                        and w() represents write subroutine. We use COMMON block `block` to share the data between these two subroutines.
+                    </p>
+                    <p>
+                        <script src="https://gist.github.com/Pranavchiku/e6790f8f2e0b3a6755beb8e4fa4167ae.js"></script>
+                    </p>
+                    <p>
+                        Now, let us proceed to the implementation part. During this week, I mainly focused on successfull parsing to AST and then 
+                        implementation of conversion of AST to ASR. On starting with the implementation, I realised that there are a few cases that current parser
+                        is unable to parse, example of such case is shown below: <a href="https://github.com/lfortran/lfortran/issues/1653">Issue: 1653</a>
+                        <script src="https://gist.github.com/Pranavchiku/fcfdbdc344780837125e6ccb37d20898.js"></script>
+                    </p>
+                    <p>
+                        On observing we realised that if we added a `,` after declaration of a COMMON block, then it was parsed successfully. So, we decided to
+                        tweak exisiting fixed-form parser to handle this case. We added a `,` after declaration of COMMON block and then parsed it successfully.
+                        More details about it can be found at: <a href="https://github.com/lfortran/lfortran/pull/1655">PR: 1655</a>
+                    </p>
+                    <p>
+                        After this, we started working on conversion of AST to ASR. It was an iterative approach we started off by creating a local hash table that 
+                        contains `std::string common_block_name` as key and `std::vector<\ASR::expr_t*> common_block_variables` as value. Upon encounter of a 
+                        COMMON block, we populated the hash table and then at the end of every program unit, we create an `ASR::Module_t` with 
+                        `common_block_variables` as public variables. Simply, we tried to perform the conversion shown below:
+                        <script src="https://gist.github.com/Pranavchiku/c67651394ece860944c5121c3e4e7d1e.js"></script>
+                    </p>
+                    <p>
+                        But this failed as we realised that COMMON block variables can't be declared like this inside module. We need to have these variables inside
+                        struct and then use that struct as public variable which is present inside module as shown below:
+                        <script src="https://gist.github.com/Pranavchiku/44fcee90ff9390f37eb0a4b5b17b2c8c.js"></script>
+                    </p>
+                    <p>
+                        On further investigation we realised that to impose restrictions over decalration of COMMON blocks and to verify the correctness of declaration, 
+                        we need to have `Union` of structs inside module as public variable and then access it. Assuming that the codebase of SciPy is correct, we decided
+                        to avoid this step and move forward with simple struct inside module based implemenation. Now in body of the program, we need to replace all the 
+                        positions where common block variables is used with StructAccessMember present in ASR node of LFortran.
+                    </p>
+                    <p>
+                        Summarizing this week work, we were able to parse COMMON block, populate hash table and create an `ASR::Module_t` with `ASR::StructType_t` inside
+                        it as public variable, which contains all the variables of COMMON block. Further more, we were able to replace common block variables with
+                        StructAccessMember for assignments. But, we are still working to make it more robust and generic. All the Issues and PRs can be found below:
+                        <li>
+                            <a href="https://github.com/lfortran/lfortran/issues/1653">Issue: 1653</a>
+                        </li>
+                        <li>
+                            <a href="https:://github.com/lfortran/lfortran/pull/1655">PR: 1655</a>
+                        </li>
+                        <li>
+                            <a href="https:://github.com/lfortran/lfortran/pull/1656">PR: 1656</a>
+                        </li>
+                        <li>
+                            <a href="https:://github.com/lfortran/lfortran/pull/1665">PR: 1665</a>
+                        </li>
+
+                    </p>
+                    <p>
+                        I would to thank <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for helping me out during this week and guiding me through the whole process.
+                    </p>
+                </div>
+            </section>
+        </article>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <ul class="icons">
+                <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+                <li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+                <li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+                <li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li>
+                <li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+            </ul>
+            <ul class="copyright">
+                <li>&copy; Pranav</li>
+                <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+            </ul>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+
+</body>
+
+</html>
