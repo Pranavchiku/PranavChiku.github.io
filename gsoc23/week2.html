@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+    <title>Week2 - COMMON blocks</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+        <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+</head>
+
+<body class="is-preload">
+
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+
+        <!-- Header -->
+        <header id="header">
+            <h1><a href="../index.html">Home</a></h1>
+            <nav id="nav">
+                <ul>
+                    <li class="special">
+                        <a href="#menu" class="menuToggle"><span>Menu</span></a>
+                        <div id="menu">
+                            <ul>
+                                <li><a href="../index.html">Home</a></li>
+                                <li><a href="../generic.html">Generic</a></li>
+                                <li><a href="../blog.html">Blog</a></li>
+                                <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Main -->
+        <article id="main">
+            <header>
+                <h2>Week2 - Continuing COMMON Blocks</h2>
+                <!-- <p>Recession time ;-;</p> -->
+            </header>
+            <section class="wrapper style5">
+                <div class="inner">
+
+                    <h3>Continuation of COMMON block</h3>
+                    <h6>Date: May 29, 2023.</h6>
+                    <p>
+                        Hello! May 28, 2023 marked the end of second week of GSoC'23. In this week I continued working on the implementation of COMMON block.
+                        Majorly I focused on getting common block variables replaced with StructAccessMember in the body of the program.
+                    </p>
+                    <p>
+                        To start simple I decided to work on getting common block variables in assignments replaced with StructAccessMember. On observation, 
+                        we found that we have to do it every time we "resolve" a variable / array. I used `replace_with_common_block_variables` function to
+                        replace common block variables with StructAccessMember. This function takes `ASR::expr_t*` as input and returns replaced `ASR::expr_t*` as output.
+                        For example:
+                        <script src="https://gist.github.com/Pranavchiku/69aa9e29440f0def7e34dcc27108d75c.js"></script>
+                    </p>
+                    <p>
+                        The above code snippet translates to the following fortran code:
+                        <script src="https://gist.github.com/Pranavchiku/d439633ae77e39cc83af1efa84c4a465.js"></script>
+                    </p>
+                    <p>
+                        Initially a COMMON module was created and populated with StructType_t, which contains all variables of COMMON blocks. Then in `ast_body_visitor`
+                        I used `replace_with_common_block_variables` to replace Variable_t and ArrayItem_t with StructAccessMember_t. This was done by checking if the
+                        variable is present in the hash table or not. If it is present then we replace it with StructAccessMember_t. With this ASR implementation of 
+                        COMMON block was completed.
+                    </p>
+                    <h4>ASR to LLVM</h4>
+                    <p>
+                        The first issue for ASR to LLVM conversion was <a href="https://github.com/lfortran/lfortran/issues/1703">Issue: 1703</a> that was because
+                        of wrong addition of `ASR::StructType_t.m_name` to dependencies of `ASR::Module_t` created. Second was <a href="https://github.com/lfortran/lfortran/issues/1684">Issue: 1684</a>
+                        which was because of not adding variable names to dependencies of `ASR::StructType_t` created. Both of these issues were fixed throught <a href="https://github.com/lfortran/lfortran/pull/1706">PR: 1706</a>.
+                    </p>
+                    <p>
+                        Later on we realised that LFortran is unable to compile the translated code to LLVM (<a href="https://github.com/lfortran/lfortran/issues/1723">Issue: 1723</a>) which needs to be fixed for 
+                        successfull compilation of ASR to LLVM code. We are still working on it and will be fixed soon.
+                    </p>
+                    <p>
+                        In short, I worked for 13 hours this week and was able to complete ASR implementaiton of COMMON block. I also worked on ASR to LLVM conversion
+                        but was unable to complete it. All the Issues and PRs can be found below:
+                        <li>
+                            <a href="https://github.com/lfortran/lfortran/pull/1665">PR: 1665</a>
+                        </li>
+                        <li>
+                            <a href="https:://github.com/lfortran/lfortran/issues/1684">Issue: 1684</a>
+                        </li>
+                        <li>
+                            <a href="https:://github.com/lfortran/lfortran/issues/1694">Issue: 1694</a>
+                        </li>
+                        <li>
+                            <a href="https:://github.com/lfortran/lfortran/pull/1695">PR: 1695</a>
+                        </li>
+                        <li>
+                            <a href="https:://github.com/lfortran/lfortran/issues/1703">Issue: 1703</a>
+                        </li>
+                        <li>
+                            <a href="https:://github.com/lfortran/lfortran/issues/1713">Issue: 1713</a>
+                        </li>
+                        <li>
+                            <a href="https:://github.com/lfortran/lfortran/issues/1714">Issue: 1714</a>
+                        </li>
+                        <li>
+                            <a href="https:://github.com/lfortran/lfortran/issues/1715">Issue: 1715</a>
+                        </li>
+                        <li>
+                            <a href="https:://github.com/lfortran/lfortran/issues/1723">Issue: 1723</a>
+                        </li>
+                    </p>
+                    <p>
+                        I would to thank <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for helping me out during this week and guiding me through the whole process.
+                    </p>
+                </div>
+            </section>
+        </article>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <ul class="icons">
+                <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+                <li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+                <li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+                <li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li>
+                <li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+            </ul>
+            <ul class="copyright">
+                <li>&copy; Pranav</li>
+                <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+            </ul>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+
+</body>
+
+</html>
