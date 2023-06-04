@@ -1,0 +1,122 @@
+<!DOCTYPE HTML>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+    <title>Week3 - COMMON blocks</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+        <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+</head>
+
+<body class="is-preload">
+
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+
+        <!-- Header -->
+        <header id="header">
+            <h1><a href="../index.html">Home</a></h1>
+            <nav id="nav">
+                <ul>
+                    <li class="special">
+                        <a href="#menu" class="menuToggle"><span>Menu</span></a>
+                        <div id="menu">
+                            <ul>
+                                <li><a href="../index.html">Home</a></li>
+                                <li><a href="../generic.html">Generic</a></li>
+                                <li><a href="../blog.html">Blog</a></li>
+                                <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Main -->
+        <article id="main">
+            <header>
+                <h2>Week3 - Bug fixes COMMON Blocks</h2>
+                <!-- <p>Recession time ;-;</p> -->
+            </header>
+            <section class="wrapper style5">
+                <div class="inner">
+
+                    <h3>Continuation of COMMON block</h3>
+                    <h6>Date: June 4, 2023.</h6>
+                    <p>
+                        Welcome back to the third blog of my GSoC '23 journey. This week I worked majorly to pick and fix bugs related to COMMON blocks. 
+                    </p>
+                    <p>
+                        Picking up the last week work on <a href="https://github.com/lfortran/lfortran/issues/1723">Issue: 1723</a> which was about LFortran not
+                        being able to identify struct members. On discussion with Ondrej we found that the fix was hidden in `visit_Variable` function of asr_to_llvm.cpp.
+                        It got fixed by adding provision to intialize non c_ptr structs while visiting them. 
+                    </p>
+                    <p>
+                        With <a href="https://github.com/lfortran/lfortran/issues/1731">PR: 1731</a> we were able to make COMMON blocks work with LLVM backend. On increasing 
+                        the complexity of tests we found that code was not able to compile for case in which arrays are part of common block and are used in the program. We have 
+                        <a href="https://github.com/lfortran/lfortran/issues/1734">Issue: 1734</a> dedicated to it, digging deep we found that LFortran is unable to access 
+                        the arrays defined inside module, the use case supported right now is arrays declared and used inside functions/subroutines and the main program itself. Whereas
+                        we are trying to access the array defined inside module from main program. We are still working on it and will be fixed soon. A dedicated issue for it is
+                        <a href="https://github.com/lfortran/lfortran/issues/1735">Issue: 1735</a>.
+                    </p>
+                    <p>
+                        To utilize the time efficiently we decided to scan SciPy and see if we are missing any edge cases, doing so we caught <a href="https://github.com/lfortran/lfortran/issues/1715">Issue: 1715</a>.
+                        It is about, the common block declares an array, the type declared in the function does not mention the dimension, so we need to get the dimension from the common block. This was fixed by 
+                        <a href="https://github.com/lfortran/lfortran/issues/1738">PR: 1738</a>.
+                    </p>
+                    <p>
+                        Later, there were few other issues reported and fixed like <a href="https://github.com/lfortran/lfortran/issues/1728">Issue: 1728</a>,
+                        <a href="https://github.com/lfortran/lfortran/issues/175">Issue: 1755</a>, <a href="https://github.com/lfortran/lfortran/issues/1756">Issue: 1756</a>, and many
+                        not registered which are fixed by <a href="https://github.com/lfortran/lfortran/issues/1754">PR: 1754</a>. All these are mostly the edge cases which were missed
+                        during initial implementation. 
+                    </p>
+                    <p>
+                        With <a href="https://github.com/lfortran/lfortran/issues/1754">PR: 1754</a> and 24 hours of work this week, I was able to compile COMMON blocks present in SciPy codebase completely to ASR
+                        and the cases which exclude array inside COMMON blocks to LLVM aswell. 
+                        I would like to thank <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for taking out time and helping me when I was stuck. Looking forward to many more commits.
+                    </p>
+
+                </div>
+            </section>
+        </article>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <ul class="icons">
+                <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+                <li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+                <li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+                <li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li>
+                <li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+            </ul>
+            <ul class="copyright">
+                <li>&copy; Pranav</li>
+                <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+            </ul>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+
+</body>
+
+</html>
