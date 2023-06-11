@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>Week4 - Bug Fixes & Block Data</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+      <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+  </head>
+
+  <body class="is-preload">
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+      <!-- Header -->
+      <header id="header">
+        <h1><a href="../index.html">Home</a></h1>
+        <nav id="nav">
+          <ul>
+            <li class="special">
+              <a href="#menu" class="menuToggle"><span>Menu</span></a>
+              <div id="menu">
+                <ul>
+                  <li><a href="../index.html">Home</a></li>
+                  <li><a href="../generic.html">Generic</a></li>
+                  <li><a href="../blog.html">Blog</a></li>
+                  <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </header>
+
+      <!-- Main -->
+      <article id="main">
+        <header>
+          <h2>Week4 - Bug Fixes & Block Data</h2>
+          <!-- <p>Recession time ;-;</p> -->
+        </header>
+        <section class="wrapper style5">
+          <div class="inner">
+            <h3>Bug fixes SciPy & Block Data</h3>
+            <h6>Date: June 11, 2023.</h6>
+            <p>
+              Hello! Welcome to the fourth blog of my GSoC '23 journey. This
+              week was based on fixing bugs and getting the statements and
+              declarations present inside Block_Data() to ASR.
+            </p>
+            <p>
+              Let's start with Block Data, it is a Fortran 77 feature which is
+              used to initialize variables and arrays. It is similar to the main
+              program but it is executed before the main program. It is used to
+              initialize the variables and arrays which are used in the main
+              program.
+            </p>
+            <p>
+              Block Data is used at only few places in SciPy codebase, and as we
+              have implementation of COMMON block and Data statements ready, I
+              thought it would be a good idea to get Block Data implemented. We
+              started with the declarations and body of block data, took every
+              combination of it and fixed the bugs which were not supported by
+              LFortran. The two major bugs were, improper handling of COMMON
+              blocks with no name and second was allowing struct instance member
+              to be used inside data statements. This was fixed by
+              <a href="https://github.com/lfortran/lfortran/pull/1763"
+                >PR: 1763</a
+              >
+            </p>
+            <p>
+              With this, we were able to get the declarations and statements of
+              block data to ASR and as we have implementation of COMMON blocks
+              and Data statements, we were able to get the declarations and
+              statements of block data to LLVM aswell.
+            </p>
+            <p>
+              Still we have to find a way to declare `block data` in ASR, which
+              we can do either by adding a new node or by using the existing
+              nodes. We are still working on it and will be fixed soon.
+            </p>
+            <p>
+              Moving ahead, we decided to scan SciPy and see if we are missing
+              any edge cases, doing so we caught various issues like handling of
+              external functions, statement functions, etc.
+            </p>
+            <p>
+              Let us begin with `external` declarations, a small example is
+              shown below:
+              <script src="https://gist.github.com/Pranavchiku/ee2736652e9d006d60f6f9f42fb4cf53.js"></script>
+              Previously, LFortran used to ignore external declaratios which
+              resulted in
+              <a href="https://github.com/lfortran/lfortran/issues/1753"
+                >Issue: 1753</a
+              >,
+              <a href="https://github.com/lfortran/lfortran/issues/1776"
+                >Issue: 1776</a
+              >.
+            </p>
+            <p>
+              In this declaration we donot have any idea about what function
+              `matvect` can be, how many arguments it will have, etc. So we
+              decided to create a template function with everything nullptr
+              and/or 0 and then fill it up when we get the definition of the
+              function. This was done in
+              <a href="https://github.com/lfortran/lfortran/issues/1789"
+                >PR: 1789</a
+              >
+            </p>
+            <p>
+              On moving ahead, we encountered
+              <a href="https://github.com/lfortran/lfortran/issues/1441"
+                >Issue: 1441</a
+              >
+              which is shown below:
+              <script src="https://gist.github.com/Pranavchiku/ba5aa430f882a742a0b75b6569c0c71e.js"></script>
+              In the above example, argument of `sub2` i.e. `c` is a double
+              precision variable when compiler visits a subroutine call, but on
+              moving ahead we encounter that `c` is an implicit function with
+              type `double precision`. So we created a template function
+              `update_call_args` that updates `sub2` to use the new symbol `c`
+              that is now a function, not a variable. This was done in
+              <a href="https://github.com/lfortran/lfortran/issues/1792"
+                >PR: 1792</a
+              >
+            </p>
+            <p>
+              On further scanning we encountered various bugs related to
+              statement functions, those were fixed through
+              <a href="https://github.com/lfortran/lfortran/issues/1794"
+                >PR: 1794</a
+              >
+              more information about it can be found in PR itself.
+            </p>
+            <p>
+              Lastly, there were some bugs related to implicit declarations
+              along with external and statement functions which got fixed by
+              <a href="https://github.com/lfortran/lfortran/issues/1800"
+                >PR: 1800</a
+              >,
+              <a href="https://github.com/lfortran/lfortran/issues/1802"
+                >PR: 1802</a
+              >
+            </p>
+            <p>
+              All in all with 23 hours of work, we were able to compile
+              `Quadpack`, `Odepack`, `statlib` completely to ASR. For the next
+              week I am planning to focus more on this bug hunting and fixing
+              along with implementation of block data, data implied do loop (if
+              possible), save attribute and some more edge cases. I would like
+              to thank
+              <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for taking
+              out time and helping me when I was stuck. Looking forward to many
+              more commits.
+            </p>
+          </div>
+        </section>
+      </article>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <ul class="icons">
+          <li>
+            <a href="#" class="icon brands fa-twitter"
+              ><span class="label">Twitter</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-facebook-f"
+              ><span class="label">Facebook</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-instagram"
+              ><span class="label">Instagram</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-dribbble"
+              ><span class="label">Dribbble</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon solid fa-envelope"
+              ><span class="label">Email</span></a
+            >
+          </li>
+        </ul>
+        <ul class="copyright">
+          <li>&copy; Pranav</li>
+          <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+        </ul>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+  </body>
+</html>
