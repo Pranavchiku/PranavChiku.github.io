@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>Week5 - Implement SAVE, DataImpliedDo, External & Bug Fixes</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+      <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+  </head>
+
+  <body class="is-preload">
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+      <!-- Header -->
+      <header id="header">
+        <h1><a href="../index.html">Home</a></h1>
+        <nav id="nav">
+          <ul>
+            <li class="special">
+              <a href="#menu" class="menuToggle"><span>Menu</span></a>
+              <div id="menu">
+                <ul>
+                  <li><a href="../index.html">Home</a></li>
+                  <li><a href="../generic.html">Generic</a></li>
+                  <li><a href="../blog.html">Blog</a></li>
+                  <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </header>
+
+      <!-- Main -->
+      <article id="main">
+        <header>
+          <h2>Week5 - Implement SAVE, DataImpliedDo, External & Bug Fixes</h2>
+        </header>
+        <section class="wrapper style5">
+          <div class="inner">
+            <h3>Implement SAVE, DataImpliedDo, External & Bug Fixes</h3>
+            <h6>Date: June 18, 2023.</h6>
+            <p>
+              Hii! Welcome to the fifth blog of my GSoC '23 journey. This week I
+              majorly focused on implementaiton of SAVE attribute,
+              DataImpliedDo, External and some bug fixes.
+            </p>
+            <p>
+              Let's start with SAVE attribute, it is used to save the value of a
+              variable in memory even after the program has finished executing.
+              This attribute is used in various places in SciPy codebase, so we
+              decided to implement it. It was fairly simple to implement, on
+              encountering `save` attribute in Declaration node of AST we set
+              ASR::storageType to `ASR::storage_typeType::Save`.
+            </p>
+            <p>
+              There were majorly two cases, one `save x, y` , where it is
+              specified to save the value of both `x` and `y` and second `save`
+              where it is specified to save the value of all the variables. More
+              details about implementation can be found in
+              <a href="https://github.com/lfortran/lfortran/pull/1835"
+                >PR: 1835</a
+              >.
+            </p>
+            <p>
+              Now let us move ahead with DataImpliedDo. I will use a small
+              example to explain it:
+              <script src="https://gist.github.com/Pranavchiku/b60f1710616ad032b92370d7ba931eec.js"></script>
+              ```fortran program data_implied_do_01 real :: a(5) integer :: i
+              DATA (a(i),i=1,5) /1.0, 2.0, 3*0.0/ end program ``` > This
+              Translates to below code internally ```fortran program
+              data_implied_do_01 real :: a(5) integer :: i DATA a(1), a(2),
+              a(3), a(4), a(5) / 1.0, 2.0, 0.0, 0.0, 0.0 / end program ``` So,
+              in the above example we can see that we are initializing `a(1)` to
+              `1.0`, `a(2)` to `2.0` and `a(3)` to `0.0` and so on. This is what
+              DataImpliedDo does, it is used to initialize the variables in a
+              single line.
+            </p>
+            <p>
+              To start with implementation, we converted DataImpliedDo AST node
+              to ImpliedDoLoop node of ASR and then added provision within
+              `visit_DataStmt` to handle ASR::ImpliedDoLoop node. More details
+              about implementation can be found in
+              <a href="https://github.com/lfortran/lfortran/pull/1837"
+                >PR:1837</a
+              >.
+            </p>
+            <p>
+              Later, there were few external attribute bugs reported at
+              <a href="https://github.com/lfortran/lfortran/issues/1801"
+                >Issue: 1801</a
+              >,
+              <a href="https://github.com/lfortran/lfortran/issues/1803"
+                >Issue: 1803</a
+              >
+              which got fixed by
+              <a href="https://github.com/lfortran/lfortran/issues/1819"
+                >PR: 1819</a
+              >, another one
+              <a href="https://github.com/lfortran/lfortran/issues/1820"
+                >Issue: 1820</a
+              >
+              for which I have a fix ready.
+            </p>
+            <p>
+              All in all with 20 hours of work this week, I was able to
+              implement Save, DataImpliedDo, and fixed various bugs related to
+              external attribute. Now only a few files are left to compile to
+              ASR. Along with that we encountered a new feature `Entry` that is
+              yet to be implemented but looks like LFortran has sufficient
+              infrastrucutre to implement it. For the next week I am planning to
+              get a above mentioned external issues done, along with that I will
+              probably start implementation of block data as discussed and if
+              possible I will try to implement `Entry` aswell.
+            </p>
+
+            <p>
+              I would like to thank
+              <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for taking
+              out time and helping me when I was stuck. Looking forward to many
+              more commits.
+            </p>
+          </div>
+        </section>
+      </article>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <ul class="icons">
+          <li>
+            <a href="#" class="icon brands fa-twitter"
+              ><span class="label">Twitter</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-facebook-f"
+              ><span class="label">Facebook</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-instagram"
+              ><span class="label">Instagram</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-dribbble"
+              ><span class="label">Dribbble</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon solid fa-envelope"
+              ><span class="label">Email</span></a
+            >
+          </li>
+        </ul>
+        <ul class="copyright">
+          <li>&copy; Pranav</li>
+          <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+        </ul>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+  </body>
+</html>
