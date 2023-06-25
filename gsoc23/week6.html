@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>Week6 - Implement Entry & Bug Fixes</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+      <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+  </head>
+
+  <body class="is-preload">
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+      <!-- Header -->
+      <header id="header">
+        <h1><a href="../index.html">Home</a></h1>
+        <nav id="nav">
+          <ul>
+            <li class="special">
+              <a href="#menu" class="menuToggle"><span>Menu</span></a>
+              <div id="menu">
+                <ul>
+                  <li><a href="../index.html">Home</a></li>
+                  <li><a href="../generic.html">Generic</a></li>
+                  <li><a href="../blog.html">Blog</a></li>
+                  <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </header>
+
+      <!-- Main -->
+      <article id="main">
+        <header>
+          <h2>Week6 - Implement Entry & Bug Fixes</h2>
+        </header>
+        <section class="wrapper style5">
+          <div class="inner">
+            <h3>Implement Entry & Bug Fixes</h3>
+            <h6>Date: June 25, 2023.</h6>
+            <p>
+              Hii! Welcome to the sixth blog of my GSoC '23 journey. This week I
+              majorly focused on implementation of Entry and some bug fixes.
+            </p>
+            <p>
+              An entry point in Fortran allows multiple entry functions to be
+              defined within a program, each with its own unique name. These
+              entry points can be invoked independently, providing different
+              paths of execution within the program. This feature is
+              particularly useful when dealing with large and complex programs
+              that require different behaviors or computations based on specific
+              conditions.
+            </p>
+            <p>
+              Let us take a small example to understand it better:
+              <script src="https://gist.github.com/Pranavchiku/1e97ee5f913307421a91ded5551a58fe.js"></script>
+            </p>
+            <p>
+              The above given code simply translates to:
+              <script src="https://gist.github.com/Pranavchiku/6da8bab21cc87881b8ffee6c3ee14595.js"></script>
+            </p>
+            <p>
+              So the implementation was fairly simply, when compiler encounters
+              entry statement in the body, we create a subroutine if parent is
+              subroutine or function if parent is function. Thereafter a hash
+              map is maintained to track all the statements that are part of
+              entry function, and a vector of active_entry_functions is
+              maintained to keep track of all the entry functions that are
+              active. Once we are done with populating body of parent function,
+              compiler checks if there are any active functions, if yes then it
+              iterates over all active functions and populates their body. More
+              details about implementation can be found in
+              <a href="https://github.com/lfortran/lfortran/pull/1866"
+                >PR: 1866</a
+              >
+            </p>
+            <p>
+              Apart from this I worked on
+              <a href="https://github.com/lfortran/lfortran/issues/1839"
+                >Issue: 1839</a
+              >
+              this one was related to updating arguments of subroutine call and
+              function after creating correct interface for external function.
+              For this I implemented a update args visitor which iterates over
+              entire generated ASR till now and checks if there is any mismatch
+              of symbols present in subroutine call and function args, if yes
+              then it replaces it correctly. This was done at
+              <a href="https://github.com/lfortran/lfortran/pull/1846"
+                >PR: 1846</a
+              >.
+            </p>
+            <p>All in all with 17.5 hours of work I was able to implement Entry statement and made external procedure handling 
+                robust. For the next week I am planning to get `min0`, `max0` implemented as this is blocking quite a few files
+                to compile to ASR. Along with that I will check if there are any bugs that I can fix.
+            </p>
+            <p>
+              I would like to thank
+              <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for taking
+              out time and helping me when I was stuck. Looking forward to many
+              more commits.
+            </p>
+          </div>
+        </section>
+      </article>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <ul class="icons">
+          <li>
+            <a href="#" class="icon brands fa-twitter"
+              ><span class="label">Twitter</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-facebook-f"
+              ><span class="label">Facebook</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-instagram"
+              ><span class="label">Instagram</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-dribbble"
+              ><span class="label">Dribbble</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon solid fa-envelope"
+              ><span class="label">Email</span></a
+            >
+          </li>
+        </ul>
+        <ul class="copyright">
+          <li>&copy; Pranav</li>
+          <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+        </ul>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+  </body>
+</html>
