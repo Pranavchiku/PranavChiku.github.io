@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>Week7 - Implement intrinsic & Bug Fixes</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+      <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+  </head>
+
+  <body class="is-preload">
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+      <!-- Header -->
+      <header id="header">
+        <h1><a href="../index.html">Home</a></h1>
+        <nav id="nav">
+          <ul>
+            <li class="special">
+              <a href="#menu" class="menuToggle"><span>Menu</span></a>
+              <div id="menu">
+                <ul>
+                  <li><a href="../index.html">Home</a></li>
+                  <li><a href="../generic.html">Generic</a></li>
+                  <li><a href="../blog.html">Blog</a></li>
+                  <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </header>
+
+      <!-- Main -->
+      <article id="main">
+        <header>
+          <h2>Week7 - Implement intrinsic & Bug Fixes</h2>
+        </header>
+        <section class="wrapper style5">
+          <div class="inner">
+            <h3>Implement intrinsic & Bug Fixes</h3>
+            <h6>Date: July 2, 2023.</h6>
+            <p>
+                Hello! Welcome to the seventh blog of my GSoC '23 journey. This week I
+                implemented `max0` instrinsic, helped in implementing intrinsic `min0`, and performed
+                a sprint to get 403 of 409 files to compile to ASR.
+            </p>
+            <p>
+                Let's start with `max0` intrinsic. This intrinsic is used to find the maximum of two
+                or more values. It is a generic intrinsic and can be used with real and integer type.
+                The way intrinsic architecture is designed, it is fairly simple to implement any new
+                intrinsic. All we need to do is to create a new namespace in `intrinsic_registry.h` and
+                add `eval_*`, `create_*` and `instantiate_*` functions. 
+            </p>
+            <p>
+                For `max0` intrinsic, I created a new namespace `max0` in `intrinsic_registry.h` and
+                added `eval_max0`, `create_max0` and `instantiate_max0` functions. `eval_max0` is used
+                to evaluate the intrinsic, `create_max0` is used to create the intrinsic and
+                `instantiate_max0` is used to instantiate the intrinsic for runtime values. More details about the
+                implementation can be found in <a href="https://github.com/lfortran/lfortran/pull/1762">PR: 1762</a>
+            </p>
+            <p>
+                I would like to thank Sarthak having initial implementation of `max0` intrinsic, Thirumalai for
+                helping me resolve the issue I was facing while implementing `max0` intrinsic and Harshita for 
+                implementing `min0` intrinsic.
+            </p>
+            <p>
+                Thereafter I performed a sprint to get <a href="https://github.com/lfortran/lfortran/pull/1891">Issue: 1891</a>,
+                <a href="https://github.com/lfortran/lfortran/pull/1892">Issue: 1892</a>, <a href="https://github.com/lfortran/lfortran/pull/693">Issue: 693</a>,
+                <a href="https://github.com/lfortran/lfortran/pull/766">Issue: 766</a>, <a href="https://github.com/lfortran/lfortran/pull/768">Issue: 768</a>,
+                <a href="https://github.com/lfortran/lfortran/pull/1896">Issue: 1896</a>, <a href="https://github.com/lfortran/lfortran/pull/1914">Issue: 1914</a>, and many more.
+            </p>
+            <p>
+                All in all with 20 hours of work I was able to get 403 of 409 files to compile to ASR. For the next week I am planning to get
+                all files compiled to ASR and then setup ASR test suite on CI, and will proceed on to LLVM. 
+            </p>
+            <p>
+              I would like to thank
+              <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for taking
+              out time and helping me when I was stuck. Looking forward to many
+              more commits.
+            </p>
+          </div>
+        </section>
+      </article>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <ul class="icons">
+          <li>
+            <a href="#" class="icon brands fa-twitter"
+              ><span class="label">Twitter</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-facebook-f"
+              ><span class="label">Facebook</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-instagram"
+              ><span class="label">Instagram</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-dribbble"
+              ><span class="label">Dribbble</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon solid fa-envelope"
+              ><span class="label">Email</span></a
+            >
+          </li>
+        </ul>
+        <ul class="copyright">
+          <li>&copy; Pranav</li>
+          <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+        </ul>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+  </body>
+</html>
