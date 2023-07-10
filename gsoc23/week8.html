@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>Week8 - Implement Argument Casting & Bug Fixes</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+      <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+  </head>
+
+  <body class="is-preload">
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+      <!-- Header -->
+      <header id="header">
+        <h1><a href="../index.html">Home</a></h1>
+        <nav id="nav">
+          <ul>
+            <li class="special">
+              <a href="#menu" class="menuToggle"><span>Menu</span></a>
+              <div id="menu">
+                <ul>
+                  <li><a href="../index.html">Home</a></li>
+                  <li><a href="../generic.html">Generic</a></li>
+                  <li><a href="../blog.html">Blog</a></li>
+                  <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </header>
+
+      <!-- Main -->
+      <article id="main">
+        <header>
+          <h2>Week8 - Implement Argument Casting & Bug Fixes</h2>
+        </header>
+        <section class="wrapper style5">
+          <div class="inner">
+            <h3>Implement Argument Casting & Bug Fixes</h3>
+            <h6>Date: July 10, 2023.</h6>
+            <p>
+                Hello! Late for blog of this week but back with a fantastic news that LFortran 
+                can now compile entire codebase of SciPy to ASR. This week I implemented `--implicit-argument-casting`
+                performed a sprint towards getting all files to compile to ASR.
+            </p>
+            <p>
+                Let's start with `--implicit-argument-casting`. This flag is same as `-fallow-argument-mismatch` in gfortran.
+                This flag allows implicitly casting of arguments to the type of the corresponding dummy arguments. Let's understand 
+                this with an example.
+                <script src="https://gist.github.com/Pranavchiku/04908bc74f48dd283a13380e18df1872.js"></script>
+                Here you can see that second argument of `idz_realcomp` is `real*8` but we have passed `complex*16`, this code will
+                throw error with gfortran but on using `-fallow-argument-mismatch` it will compile successfully.
+            </p>
+            <p>
+                To implement this, we created a new flag `--implicit-argument-casting` and registered it, and when flag is active
+                we implicitly cast the arguments where mismatch is found. Simply, the converted code looks like:
+                <script src="https://gist.github.com/Pranavchiku/db6a40997d3c3871964beccacd41191d.js"></script>.
+                More details about this can be found in <a href="https://github.com/lfortran/lfortran/pull/1942">PR: 1942</a>
+            </p>
+            <p>
+                With this done, I performed a sprint to get all files compile to ASR. This mainly invovled bug fixes related to 
+                handling of common block variables <a href="https://github.com/lfortran/lfortran/pull/1961">PR: 1961</a>, duplicating symbols in entry functions 
+                <a href="https://github.com/lfortran/lfortran/pull/1959">PR: 1959</a>, <a href="https://github.com/lfortran/lfortran/pull/1956">PR: 1956</a> and many more.
+            </p>
+            <p>
+                Then we worked to setup CI to test ASR generation on every commit. Details about it can be found at <a href="https://github.com/lfortran/lfortran/pull/1964">PR: 1964</a>.
+            </p>
+            <p>
+                All in all with 22.5 hours of work this week, we were able to get all files to compile to ASR. This is a huge milestone
+                for LFortran and we are very close to getting a working compiler. I thank <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for 
+                constantly helping me out and guiding me. Without him this would not have been possible. Along with him efforts from 
+                Gagandeep Singh, Thirumalai Shaktivel, Smit Lunagaria, and many others helped us achieve this milestone.
+            </p>
+            <p>
+                For the next week, I will look into which package we can pick to get it compile to LLVM and align output with gfortran quickly and start working
+                on it.
+            </p>
+          </div>
+        </section>
+      </article>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <ul class="icons">
+          <li>
+            <a href="#" class="icon brands fa-twitter"
+              ><span class="label">Twitter</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-facebook-f"
+              ><span class="label">Facebook</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-instagram"
+              ><span class="label">Instagram</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-dribbble"
+              ><span class="label">Dribbble</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon solid fa-envelope"
+              ><span class="label">Email</span></a
+            >
+          </li>
+        </ul>
+        <ul class="copyright">
+          <li>&copy; Pranav</li>
+          <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+        </ul>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+  </body>
+</html>
