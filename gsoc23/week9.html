@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>Week9 - Building SciPy & ImpliedDoLoops</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+      <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+  </head>
+
+  <body class="is-preload">
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+      <!-- Header -->
+      <header id="header">
+        <h1><a href="../index.html">Home</a></h1>
+        <nav id="nav">
+          <ul>
+            <li class="special">
+              <a href="#menu" class="menuToggle"><span>Menu</span></a>
+              <div id="menu">
+                <ul>
+                  <li><a href="../index.html">Home</a></li>
+                  <li><a href="../generic.html">Generic</a></li>
+                  <li><a href="../blog.html">Blog</a></li>
+                  <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </header>
+
+      <!-- Main -->
+      <article id="main">
+        <header>
+          <h2>Week9 - Building SciPy & ImpliedDoLoops</h2>
+        </header>
+        <section class="wrapper style5">
+          <div class="inner">
+            <h3>Building SciPy & ImpliedDoLoops</h3>
+            <h6>Date: July 16, 2023.</h6>
+            <p>
+                Hello! Welcome to the blog of week 9. This week I worked on building SciPy with LFortran and
+                implementation of ImpliedDoLoops.
+            </p>
+            <p>
+                So, after successfully compiling all files to ASR, I and Ondřej Čertík discussed about best way to
+                proceed further. We decided to pick a package that compiles to LLVM and start working on it for aligning 
+                output with gfortran. We picked specfun as it compiles to LLVM and then tried to somehow tweak build system
+                of SciPy to build specfun with LFortran. We made progress over it, a few tests run and pass but it still segfaults
+                after few tests. We are still working on it and will get it to work soon. More details about it can be found at
+                <a href="https://github.com/lfortran/lfortran/issues/1979">Issue: 1979</a>
+            </p>
+            <p>
+                Later, I picked up an issue which is most frequent issue in SciPy codebase, ImpliedDoLoops. ImpliedDoLoops are a bit
+                tricky to implement, I had tried it previously but failed, so this time I decided to take a different approach and looks like 
+                I am making a steady progress over it. Let us use a simple example to understand ImpliedDoLoops.
+                <script src="https://gist.github.com/Pranavchiku/14a6358003eaf0d1b4fe766462b93e4d.js"></script>
+                In the above example you can see that assignment to x is done using a particular syntax, which is called ImpliedDoLoops.
+            </p>
+            <p>
+                On discussion at <a href="https://github.com/lfortran/lfortran/issues/981">Issue: 981</a>, we decided to create an ASR pass
+                which will convert the above given example to: 
+                <script src="https://gist.github.com/Pranavchiku/ec53afd1d7f22d6c3c939a7c85b9e451.js"></script>
+                This will make it easier to implement ImpliedDoLoops. I have initial implementation of this ready, you can have a look at it 
+                <a href="https://github.com/lfortran/lfortran/pull/1993">PR: 1993</a>.
+            </p>
+            <p>
+                All in all with 22.5 hours of work, I was able to make progress over building SciPy and ImpliedDoLoops. For next week I will push to
+                somehow get all tests running with lfortran and simultaneously work on ImpliedDoLoops. 
+            </p>
+            <p>
+                I would like to thank
+                <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for taking
+                out time and helping me when I was stuck. Looking forward to many
+                more commits.
+              </p>
+          </div>
+        </section>
+      </article>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <ul class="icons">
+          <li>
+            <a href="#" class="icon brands fa-twitter"
+              ><span class="label">Twitter</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-facebook-f"
+              ><span class="label">Facebook</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-instagram"
+              ><span class="label">Instagram</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-dribbble"
+              ><span class="label">Dribbble</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon solid fa-envelope"
+              ><span class="label">Email</span></a
+            >
+          </li>
+        </ul>
+        <ul class="copyright">
+          <li>&copy; Pranav</li>
+          <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+        </ul>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+  </body>
+</html>
