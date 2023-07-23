@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>Week10 - Building SciPy & ImpliedDoLoops - Continuation</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+      <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+  </head>
+
+  <body class="is-preload">
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+      <!-- Header -->
+      <header id="header">
+        <h1><a href="../index.html">Home</a></h1>
+        <nav id="nav">
+          <ul>
+            <li class="special">
+              <a href="#menu" class="menuToggle"><span>Menu</span></a>
+              <div id="menu">
+                <ul>
+                  <li><a href="../index.html">Home</a></li>
+                  <li><a href="../generic.html">Generic</a></li>
+                  <li><a href="../blog.html">Blog</a></li>
+                  <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </header>
+
+      <!-- Main -->
+      <article id="main">
+        <header>
+          <h2>Week10 - Building SciPy & ImpliedDoLoops</h2>
+        </header>
+        <section class="wrapper style5">
+          <div class="inner">
+            <h3>Building SciPy & ImpliedDoLoops</h3>
+            <h6>Date: July 23, 2023.</h6>
+            <p>
+                Hii there! Welcome to blog of week 10. This week I continued implementation of ImpliedDoLoops made a decent
+                progress over it and also somehow manage to get SciPy Specfun build and run tests with LFortran.
+            </p>
+            <p>
+                Let's pick up ImpliedDoLoops from where we left, we had initial implementation of implied do loops ready, but it lacked
+                support for nested implied do loops, accessing array elements, variables casting, etc. So, I started workin on it and provided
+                support for these. Later, I realised that exisiting implementation of implied do loops was working fine for few cases that latest
+                implementation was not able to handle. So, I decided to keep both implementations and first apply exisiting approach and then
+                the latest one. This worked fine and I was able to pass all tests. You can have a look at it <a href="https://github.com/lfortran/lfortran/pull/1993">PR: 1993</a>.
+                But, I am not satisfied with this approach as it is not a clean implementation and also it is not very efficient. So, I am still
+                working on it and will try to come up with a better approach.
+            </p>
+            <p>
+                Secondly, with help from Ondřej Čertík, I was able to get SciPy Specfun build and run tests with LFortran. We had to comment and remove
+                few tests as they were not compatible with LFortran. You can track the progress at <a href="https://github.com/lfortran/lfortran/issues/1979">Issue: 1979</a>.
+                We planned to setup CI for Specfun in this week, but I was unable to do that. 
+            </p>
+            <p>
+                This week I was unable to give much time to GSoC due to some personal reasons, worked only for 12.5 hours. For next week I will try to
+                setup CI for Specfun and also work on ImpliedDoLoops. 
+            </p>
+            <p>
+                I would like to thank
+                <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for taking
+                out time and helping me when I was stuck. Looking forward to many
+                more commits.
+              </p>
+          </div>
+        </section>
+      </article>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <ul class="icons">
+          <li>
+            <a href="#" class="icon brands fa-twitter"
+              ><span class="label">Twitter</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-facebook-f"
+              ><span class="label">Facebook</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-instagram"
+              ><span class="label">Instagram</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-dribbble"
+              ><span class="label">Dribbble</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon solid fa-envelope"
+              ><span class="label">Email</span></a
+            >
+          </li>
+        </ul>
+        <ul class="copyright">
+          <li>&copy; Pranav</li>
+          <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+        </ul>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+  </body>
+</html>
