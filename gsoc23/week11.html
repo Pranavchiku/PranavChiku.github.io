@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+  <head>
+    <title>Week11 - Align Specfun output with GFortran</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+      <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+  </head>
+
+  <body class="is-preload">
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+      <!-- Header -->
+      <header id="header">
+        <h1><a href="../index.html">Home</a></h1>
+        <nav id="nav">
+          <ul>
+            <li class="special">
+              <a href="#menu" class="menuToggle"><span>Menu</span></a>
+              <div id="menu">
+                <ul>
+                  <li><a href="../index.html">Home</a></li>
+                  <li><a href="../generic.html">Generic</a></li>
+                  <li><a href="../blog.html">Blog</a></li>
+                  <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </header>
+
+      <!-- Main -->
+      <article id="main">
+        <header>
+          <h2>Week11 - Align Specfun output with GFortran</h2>
+        </header>
+        <section class="wrapper style5">
+          <div class="inner">
+            <h3>Align Specfun output with GFortran</h3>
+            <h6>Date: July 30, 2023.</h6>
+            <p>
+                Hello everyone! Welcome to blog of week 11. This week I focused on understanding how the scipy tests work and how can we
+                align the output of LFortran with GFortran ( for scipy/special/specfun ). 
+            </p>
+            <p>
+                So, I will document the steps that I followed to grasp the working of scipy tests. For `scipy/special` suite the tests can 
+                be found at `scipy/special/tests`, let us focus on a test that is `test_basic.py`. 
+            </p>
+            <p>
+                So, here are the steps one can follow to build the SciPy system and run tests:
+            </p>
+            <script src="https://gist.github.com/Pranavchiku/d30cd434ae9807e322ed5bd86cce3d65.js"></script>
+            <p>
+                To run a specfic test, one can append the test name at end of command, for example:
+                <script src="https://gist.github.com/Pranavchiku/f95127d0b55e21f2d1bfce7af7e9cdf5.js"></script>
+            </p>
+            <p>
+                So, once we have the tests getting passed with GFortran, we can start working on aligning the output of LFortran with GFortran.
+            </p>
+            <p>
+                Now, we will have to somehow let the SciPy build system know that we want to use LFortran instead of GFortran. And that can
+                be done by following the following steps:
+                <script src="https://gist.github.com/Pranavchiku/a2acae2cea4d7e5f87d42dfd351b0908.js"></script>
+            </p>
+            <p>
+                Now, once the tests run, we will be able to see an assert failed for `test_riccati_yn`, that shows divergence. The following divergence 
+                is because of `SUBROUTINE RCTY(N,X,NM,RY,DY)` present in `specfun.f`. The output of GFortran and LFortran for this subroutine is different.
+                More information about this can be found at <a href="https://github.com/lfortran/lfortran/issues/2067">Issue: 2067</a> and 
+                <a href="https://github.com/lfortran/lfortran/issues/2078">Issue: 2078</a>.
+            </p>
+            <p>
+                Now, one digging deep into the code, I found that the divergence was because of pass `do_loops.cpp` which replaces the do loop with do while loop.
+                Let us understand the error with an example:
+            </p>
+            <script src="https://gist.github.com/Pranavchiku/e3215bc574e0da1b2c993abe177d33c6.js"></script>
+            <p>
+                This was simple to resolve, i just added at new statement to increment do loop variable by increment value. More information about this
+                can be found at <a href="https://github.com/lfortran/lfortran/issues/2079">PR: 2079</a>.
+            </p>
+            <p>
+                So all in all with 12 hours of work, I got to understand how the tests work in SciPy and also how can I work on alignment of output of LFortran.
+                I shifted back to my Linux system and hence I am working on setting up SciPy again on my system, it is failing while executing tests. I will push to get that done, 
+                and then will setup CI as discussed. For next week, I will work on scipy tests and try to get as many working as possible. 
+            </p>
+            <p>
+                I would like to thank
+                <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for helping in scipy setup and helping me whenever I am stuck. Looking forward to many
+                more commits.
+              </p>
+          </div>
+        </section>
+      </article>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <ul class="icons">
+          <li>
+            <a href="#" class="icon brands fa-twitter"
+              ><span class="label">Twitter</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-facebook-f"
+              ><span class="label">Facebook</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-instagram"
+              ><span class="label">Instagram</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon brands fa-dribbble"
+              ><span class="label">Dribbble</span></a
+            >
+          </li>
+          <li>
+            <a href="#" class="icon solid fa-envelope"
+              ><span class="label">Email</span></a
+            >
+          </li>
+        </ul>
+        <ul class="copyright">
+          <li>&copy; Pranav</li>
+          <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+        </ul>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+  </body>
+</html>
