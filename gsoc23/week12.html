@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+    <title>Week12 - SciPy Build & Fixing bugs</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript>
+        <link rel="stylesheet" href="../assets/css/noscript.css" />
+    </noscript>
+</head>
+
+<body class="is-preload">
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+        <!-- Header -->
+        <header id="header">
+            <h1><a href="../index.html">Home</a></h1>
+            <nav id="nav">
+                <ul>
+                    <li class="special">
+                        <a href="#menu" class="menuToggle"><span>Menu</span></a>
+                        <div id="menu">
+                            <ul>
+                                <li><a href="../index.html">Home</a></li>
+                                <li><a href="../generic.html">Generic</a></li>
+                                <li><a href="../blog.html">Blog</a></li>
+                                <!-- <li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Sign Up</a></li>
+								<li><a href="#">Log In</a></li> -->
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Main -->
+        <article id="main">
+            <header>
+                <h2>Week12 - SciPy Build & Fixing bugs</h2>
+            </header>
+            <section class="wrapper style5">
+                <div class="inner">
+                    <h3>SciPy Build & Fixing bugs</h3>
+                    <h6>Date: Aug 6, 2023.</h6>
+                    <p>
+                        Hello everyone! Week 12, last week of my GSoC journey. This week I worked on getting SciPy build
+                        in my system and also fixed some bugs in LFortran.
+                    </p>
+                    <p>
+                        Let's start with SciPy build, after discussion with Ondřej Čertík, we decided to open an issue
+                        at SciPy
+                        stating them the problem that I am facing while building SciPy. The issue can be found at <a
+                            href="https://github.com/scipy/scipy/issues/19017">Issue: 19017</a>. In short, the error
+                        that I faced
+                        was `AssertionError: Bad argument number for Assign: 3, expecting 2`. At first site it looked
+                        like a
+                        problem with gast version, but later we found that trouble is in installation of mambaforge. I
+                        mistakenly
+                        installed mambaforge-pypy3 and not mambaforge. Thanks to Ondřej Čertík for pointing out the
+                        error, and then
+                        on successful installation of mambaforge from <a
+                            href="https://github.com/conda-forge/miniforge#mambaforge">miniforge#mambaforge</a>
+                        SciPy build was successful.
+                    </p>
+                    <p>
+                        Moving ahead, I implemented a new flag `--use-loop-variable-after-loop` which is used to decide
+                        whether to use
+                        loop variable after loop or not. In continuation of work from previous week <a
+                            href="https://github.com/lfortran/lfortran/issues/2079">PR: 2079</a>,
+                        we decided to hide the implementation under a flag. The PR can be found at <a
+                            href="https://github.com/lfortran/lfortran/issues/2081">PR: 2081</a>.
+                    </p>
+                    <p>
+                        Then I worked on <a href="https://github.com/lfortran/lfortran/issues/1977">Issue: 1977</a>
+                        which is about handling of external functions in LFortran.
+                        Let us take the minimal example to understand the problem:
+                        <script src="https://gist.github.com/Pranavchiku/46703c34838da120d4386449939af857.js"></script>
+                    </p>
+                    <p>
+                        If we look at the code, `f` is an external function with no exisiting implementation and hence
+                        we need use the standard template `f` created
+                        while handling external functions and hence ASR generates correctly. For LLVM, we have `f` type
+                        mentioned as Interface and hence compiler donot
+                        generate function code, then it is passed in as a subroutine call argument and here the compiler
+                        askes generated code but as there is no code generated
+                        it throws an error. The solution to this problem is:
+                        When visiting the function dqc25f in the body visitor, check if there are any external symbols
+                        in it. If so, resolve them fully, that is, find f in the global symbol table, if available,
+                        update the interface stub to be conforming. If it is not available, then don't do anything,
+                        since the function f will be linked in a separate compilation, in which case it's fine if the
+                        type doesn't match.
+                    </p>
+                    <p>
+                        Next up, I worked on <a href="https://github.com/lfortran/lfortran/issues/2086">Issue: 2086</a>,
+                        which catches an inefficient implementation of data statement in LFortran. Let us take a look at
+                        the example:
+                        <script src="https://gist.github.com/Pranavchiku/d732a41870eb77f830008c8cfb512fd3.js"></script>
+                        The problem here is that current implementation of data statement adds Integer 2, 3350 times to
+                        the list at compile time.
+                        This produces a very hefty around 24,000+ lines of code in LLVM which then takes a lot of time
+                        to compile. A solution to This
+                        is to create a do loop for assignment to vect.
+                    </p>
+                    <p>
+                        So with 16.5 hours this week, I was able to get SciPy build and also fixed some bugs in
+                        LFortran. All in all for entire 12 weeks, I completed
+                        248.5 hours out of 175 hours and get LFortran compile entire codebase of SciPy to ASR, 77.995%
+                        files to LLVM :)). I would like to thank
+                        <a href="https://ondrejcertik.com/">Ondřej Čertík</a> for helping me throughout my GSoC journey.
+                        I would also like to thank
+                        Thirumalai Shaktivel, Gagandeep Singh, Ubaid Saikh, Smit Lunagaria and all other members of
+                        LFortran community for helping me
+                        and guiding me whenever I was stuck. I would also like to thank Google for giving me this
+                        opportunity to work with LFortran.
+                    </p>
+                    <p>
+                        Daily logs of work done can be found at
+                        <li>
+                            <a
+                                href="https://docs.google.com/spreadsheets/d/1AKG3mySFhpkdFOY4SMzN1LGnftUF-u87DEHOWs10IVw/edit?usp=sharing">May
+                                2023</a>
+                        </li>
+                        <li>
+                            <a
+                                href="https://docs.google.com/spreadsheets/d/19BBgOGuWyQIMN6Sbc4sLRoPfqQNBgFrKGuwjkvtmZW0/edit?usp=sharing">June
+                                2023</a>
+                        </li>
+                        <li>
+                            <a
+                                href="https://docs.google.com/spreadsheets/d/1whLykrm0UIOFyykaOwc3rSOEZ8dhpNfcLCaSsiGPmI8/edit?usp=sharing">July
+                                - August 2023</a>
+                        </li>
+                    </p>
+
+                </div>
+            </section>
+        </article>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <ul class="icons">
+                <li>
+                    <a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a>
+                </li>
+                <li>
+                    <a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a>
+                </li>
+                <li>
+                    <a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a>
+                </li>
+                <li>
+                    <a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a>
+                </li>
+                <li>
+                    <a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a>
+                </li>
+            </ul>
+            <ul class="copyright">
+                <li>&copy; Pranav</li>
+                <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/jquery.scrolly.min.js"></script>
+    <script src="../assets/js/browser.min.js"></script>
+    <script src="../assets/js/breakpoints.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+</body>
+
+</html>
